@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEAGULL STUDIO — PS4 [5.05] 7.00 - 14.02 FW Host By ThetHtooAung</title>
+  <!-- Load Tailwind CSS for responsive utility layout -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Google Fonts: Audiowide, Exo 2, Rajdhani, and Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Exo+2:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Orbitron:wght@700;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Base reset & viewport styling */
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #040b18;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(10px, 3vw, 24px);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0, 112, 204, 0.18), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(46, 154, 255, 0.14), transparent 50%),
+        #040b18;
+    }
+
+    /* Widescreen 16:9 PlayStation Blue Stage */
+    .ps4-stage {
+      position: relative;
+      width: 100%;
+      max-width: 1060px;
+      aspect-ratio: 16 / 9;
+      min-height: 450px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.45);
+      box-shadow:
+        0 24px 70px rgba(0, 112, 204, 0.36),
+        0 0 38px rgba(46, 154, 255, 0.18),
+        inset 0 0 28px rgba(2, 132, 199, 0.18);
+      background-color: #050f24;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-image 0.25s ease;
+    }
+
+    /* Overlay container structured as top header, lower-center status, and bottom credits */
+    .stage-overlay {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      padding: clamp(14px, 2.4vw, 24px);
+    }
+
+    /* Top Header Bar */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 14px;
+      background: rgba(5, 15, 36, 0.74);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      border-radius: 12px;
+      padding: 10px 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+      user-select: none;
+    }
+
+    .top-title {
+      font-size: clamp(0.8rem, 1.35vw, 0.96rem);
+      font-weight: 700;
+      color: #e0f2fe;
+      letter-spacing: 0.015em;
+      line-height: 1.35;
+    }
+
+    /* Modern Geometric Technology Fonts for SEAGULL STUDIO & By ThetHtooAung */
+    .brand-tech {
+      font-family: 'Audiowide', 'Exo 2', 'Orbitron', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+    }
+
+    .studio-accent {
+      color: #f87171;
+      text-shadow: 0 0 12px rgba(248, 113, 113, 0.55);
+    }
+
+    .author-tech {
+      font-family: 'Rajdhani', 'Exo 2', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #bae6fd;
+    }
+
+    /* Utility buttons hidden by default for a clean PS4 host view; toggle via 'H' or double-click */
+    .top-controls {
+      display: none;
+    }
+
+    .top-controls.is-visible {
+      display: flex;
+    }
+
+    .action-btn {
+      background: rgba(2, 132, 199, 0.28);
+      color: #f0f9ff;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .action-btn:hover {
+      background: rgba(2, 132, 199, 0.56);
+      border-color: #38bdf8;
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    .action-btn:focus-visible {
+      outline: 2px solid #38bdf8;
+      outline-offset: 2px;
+    }
+
+    /* Lower-Centered Translucent Status Card */
+    .center-status {
+      margin-top: auto;
+      margin-bottom: 10px;
+      text-align: center;
+      padding: 12px 20px;
+      background: rgba(4, 12, 28, 0.70);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.30);
+      border-radius: 12px;
+      align-self: center;
+      max-width: 92%;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .loading-text {
+      font-size: clamp(0.92rem, 1.75vw, 1.24rem);
+      font-weight: 600;
+      letter-spacing: 0.015em;
+      color: #ffffff;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+    }
+
+    .sub-status {
+      margin-top: 4px;
+      font-size: clamp(0.72rem, 1.1vw, 0.8rem);
+      color: #93c5fd;
+    }
+
+    /* Bottom Credits Footer */
+    .credits-bar {
+      text-align: center;
+      font-size: clamp(0.74rem, 1.25vw, 0.9rem);
+      font-weight: 600;
+      line-height: 1.4;
+      color: #e2e8f0;
+      background: rgba(4, 11, 24, 0.78);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 10px;
+      padding: 8px 14px;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 640px) {
+      .ps4-stage {
+        aspect-ratio: auto;
+        min-height: 440px;
+        border-radius: 14px;
+      }
+
+      .stage-overlay {
+        padding: 12px;
+      }
+
+      .action-btn {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="ps4Stage" class="ps4-stage" aria-label="SEAGULL STUDIO — PS4 [5.05] 7.00 - 14.02 FW Host By ThetHtooAung">
+    <div class="stage-overlay">
+      <!-- Top Header Bar -->
+      <header id="topBar" class="top-bar" title="Double-click or press 'H' to toggle controls">
+        <div class="top-title">
+          <span class="brand-tech">SEAGULL <span class="studio-accent">STUDIO</span></span> — PS4 [5.05] 7.00 - 14.02 FW Host <span class="author-tech">By ThetHtooAung</span>
+        </div>
+
+        <!-- Hidden by default; toggled via 'H' key or double-clicking the top bar -->
+        <div id="topControls" class="top-controls flex-wrap items-center gap-2 w-full sm:w-auto">
+          <button type="button" id="uploadBgBtn" class="action-btn">Choose BG Image</button>
+          <button type="button" id="resetBgBtn" class="action-btn">Reset BG</button>
+          <button type="button" id="replayBtn" class="action-btn">Replay Status</button>
+          <button type="button" id="fullscreenBtn" class="action-btn">Full Screen</button>
+          <input type="file" id="bgFileInput" accept="image/*" hidden />
+        </div>
+      </header>
+
+      <!-- Lower-Centered Translucent Status Card -->
+      <main class="center-status">
+        <div id="loadingText" class="loading-text" aria-live="polite">
+          Loading GoldHEN v2.4b18.14... Please Wait
+        </div>
+        <div id="subStatus" class="sub-status">
+          PS4 Host UI Ready • Press 'H' or double-click header for display options
+        </div>
+      </main>
+
+      <!-- Bottom Credits Footer -->
+      <footer class="credits-bar">
+        Special Thanks to:
+        <span style="color: #38bdf8;">@_AlAzif</span>
+        ChendoChap
+        <span style="color: #f472b6;">@Kameleonre_</span>
+        SiSTRo Abc • Theme by <strong>ThetHtooAung</strong>
+      </footer>
+    </div>
+  </section>
+
+  <script>
+    // =========================================================================
+    // 1. DOM REFERENCES & CONSTANTS
+    // =========================================================================
+    const ps4Stage = document.getElementById('ps4Stage');
+    const topBar = document.getElementById('topBar');
+    const topControls = document.getElementById('topControls');
+    const loadingText = document.getElementById('loadingText');
+    const subStatus = document.getElementById('subStatus');
+    const uploadBgBtn = document.getElementById('uploadBgBtn');
+    const resetBgBtn = document.getElementById('resetBgBtn');
+    const replayBtn = document.getElementById('replayBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const bgFileInput = document.getElementById('bgFileInput');
+
+    const STORAGE_BG_KEY = 'seagull_host_bg_data';
+    const STATUS_PREFIX = 'Loading GoldHEN v2.4b18.14';
+    const STATUS_SUFFIX = 'Please Wait';
+    let dotsCount = 3;
+    let statusTimer = null;
+
+    // =========================================================================
+    // 2. HIGH-DETAIL FALLBACK INLINE SVG DATA-URI ARTWORK
+    //    Displays "SEAGULL STUDIO" (white + glowing red STUDIO), "By ThetHtooAung",
+    //    PS4 console & DualShock 4 controller silhouettes, PlayStation shapes,
+    //    and glowing blue energy waves when no custom or local image is present.
+    // =========================================================================
+    function buildFallbackSvgDataUri() {
+      const svgMarkup = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+          <defs>
+            <radialGradient id="bgRadial" cx="50%" cy="54%" r="68%">
+              <stop offset="0%" stop-color="#0a2554" />
+              <stop offset="55%" stop-color="#05122b" />
+              <stop offset="100%" stop-color="#030917" />
+            </radialGradient>
+            <radialGradient id="coreGlow" cx="50%" cy="58%" r="42%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.34" />
+              <stop offset="60%" stop-color="#0284c7" stop-opacity="0.14" />
+              <stop offset="100%" stop-color="#050f24" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="waveA" x1="0%" y1="50%" x2="100%" y2="50%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.08" />
+              <stop offset="30%" stop-color="#38bdf8" stop-opacity="0.85" />
+              <stop offset="70%" stop-color="#60a5fa" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#003791" stop-opacity="0.08" />
+            </linearGradient>
+            <linearGradient id="waveB" x1="100%" y1="45%" x2="0%" y2="60%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.08" />
+              <stop offset="50%" stop-color="#7dd3fc" stop-opacity="0.72" />
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.08" />
+            </linearGradient>
+            <linearGradient id="ps4Top" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1e293b" />
+              <stop offset="55%" stop-color="#0f172a" />
+              <stop offset="100%" stop-color="#070e1d" />
+            </linearGradient>
+            <filter id="studioRedGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="8" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter id="blueLineGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Deep PlayStation Blue Background -->
+          <rect width="1280" height="720" fill="url(#bgRadial)" />
+          <rect width="1280" height="720" fill="url(#coreGlow)" />
+
+          <!-- Subtle Faceted Low-Poly Triangles -->
+          <polygon points="0,0 320,0 140,210" fill="#0b244d" opacity="0.28" />
+          <polygon points="1280,0 960,0 1120,230" fill="#0b244d" opacity="0.28" />
+          <polygon points="0,720 260,500 410,720" fill="#071a3b" opacity="0.35" />
+          <polygon points="1280,720 980,480 860,720" fill="#071a3b" opacity="0.35" />
+
+          <!-- Glowing Blue Energy Waves & Orbital Rings -->
+          <g filter="url(#blueLineGlow)">
+            <path d="M-30 445 C 210 265, 430 545, 670 375 C 895 215, 1085 450, 1310 305" fill="none" stroke="url(#waveA)" stroke-width="5" />
+            <path d="M-30 385 C 245 525, 475 245, 725 405 C 945 540, 1125 275, 1310 395" fill="none" stroke="url(#waveB)" stroke-width="3.5" />
+            <path d="M-20 415 C 290 330, 510 490, 770 350 C 990 240, 1140 390, 1300 345" fill="none" stroke="#bae6fd" stroke-opacity="0.45" stroke-width="1.8" />
+            <ellipse cx="640" cy="445" rx="355" ry="96" fill="none" stroke="#38bdf8" stroke-opacity="0.42" stroke-width="2.5" />
+            <ellipse cx="640" cy="452" rx="295" ry="74" fill="none" stroke="#7dd3fc" stroke-opacity="0.28" stroke-width="1.5" />
+          </g>
+
+          <!-- Floating Particle Sparks -->
+          <g fill="#7dd3fc" opacity="0.75">
+            <circle cx="290" cy="360" r="2.5" />
+            <circle cx="345" cy="330" r="1.8" />
+            <circle cx="410" cy="470" r="2.2" />
+            <circle cx="515" cy="275" r="2.4" />
+            <circle cx="775" cy="285" r="2.6" />
+            <circle cx="860" cy="335" r="2.0" />
+            <circle cx="945" cy="420" r="2.5" />
+            <circle cx="1015" cy="365" r="1.8" />
+          </g>
+
+          <!-- Floating PlayStation Geometric Shapes (Triangle, Square, Circle, Cross) -->
+          <g fill="none" stroke="#38bdf8" stroke-width="2.4" opacity="0.48">
+            <!-- Triangle -->
+            <polygon points="155,245 173,276 137,276" />
+            <polygon points="1065,205 1081,233 1049,233" transform="rotate(18 1065 220)" />
+            <!-- Square -->
+            <rect x="405" y="195" width="24" height="24" transform="rotate(45 417 207)" />
+            <rect x="1145" y="455" width="24" height="24" transform="rotate(25 1157 467)" />
+            <!-- Circle -->
+            <circle cx="1015" cy="525" r="13" />
+            <circle cx="235" cy="485" r="10" />
+            <!-- Cross -->
+            <path d="M325 190 L345 210 M345 190 L325 210" />
+            <path d="M165 450 L187 472 M187 450 L165 472" />
+          </g>
+
+          <!-- Modern Tech Framing Accents & Hero Typography: SEAGULL STUDIO By ThetHtooAung -->
+          <g stroke="#38bdf8" stroke-opacity="0.45" stroke-width="1.6" fill="none">
+            <polyline points="265,104 245,104 245,154 265,154" />
+            <polyline points="1015,104 1035,104 1035,154 1015,154" />
+            <line x1="535" y1="165" x2="745" y2="165" stroke="#38bdf8" stroke-opacity="0.35" stroke-width="1.2" />
+          </g>
+          <text
+            x="640"
+            y="146"
+            text-anchor="middle"
+            font-family="'Audiowide', 'Exo 2', 'Orbitron', 'Rajdhani', sans-serif"
+            font-weight="800"
+            font-size="52"
+            letter-spacing="5"
+          >
+            <tspan fill="#ffffff">SEAGULL </tspan>
+            <tspan fill="#ef4444" filter="url(#studioRedGlow)">STUDIO</tspan>
+          </text>
+          <text
+            x="640"
+            y="196"
+            text-anchor="middle"
+            font-family="'Audiowide', 'Exo 2', 'Orbitron', 'Rajdhani', sans-serif"
+            font-weight="700"
+            font-size="25"
+            fill="#bae6fd"
+            letter-spacing="4"
+          >
+            By ThetHtooAung
+          </text>
+
+          <!-- Stylized PS4 Console Silhouette -->
+          <g>
+            <!-- Top Slanted Chassis -->
+            <polygon points="415,342 635,264 795,338 575,424" fill="url(#ps4Top)" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.6" />
+            <!-- Left Front Bevel -->
+            <polygon points="415,342 575,424 575,468 415,382" fill="#060e1f" stroke="#0284c7" stroke-opacity="0.55" stroke-width="1.5" />
+            <!-- Right Side Bevel -->
+            <polygon points="575,424 795,338 795,382 575,468" fill="#0b1933" stroke="#0284c7" stroke-opacity="0.55" stroke-width="1.5" />
+            <!-- Signature Glowing PS4 LED Light Strip -->
+            <line x1="496" y1="302" x2="684" y2="380" stroke="#38bdf8" stroke-width="3" filter="url(#blueLineGlow)" />
+            <!-- Subtle PS4 Label -->
+            <text x="612" y="438" fill="#64748b" font-family="'Exo 2', sans-serif" font-weight="700" font-size="13" letter-spacing="2" transform="rotate(-21 612 438)">PS4</text>
+          </g>
+
+          <!-- Stylized DualShock 4 Controller Silhouette -->
+          <g transform="translate(692, 386)">
+            <path
+              d="M36,28 C50,17 114,17 128,28 L150,84 C156,101 139,116 125,105 L104,84 L60,84 L39,105 C25,116 8,101 14,84 Z"
+              fill="#0b172e"
+              stroke="#38bdf8"
+              stroke-opacity="0.65"
+              stroke-width="2"
+            />
+            <!-- Touchpad & Lightbar -->
+            <rect x="57" y="25" width="50" height="25" rx="4" fill="#132647" stroke="#38bdf8" stroke-opacity="0.65" stroke-width="1.3" />
+            <line x1="59" y1="24" x2="105" y2="24" stroke="#38bdf8" stroke-width="3.2" filter="url(#blueLineGlow)" />
+            <!-- D-Pad -->
+            <path d="M38,44 h8 v8 h8 v8 h-8 v8 h-8 v-8 h-8 v-8 h8 z" fill="#1e293b" stroke="#38bdf8" stroke-opacity="0.45" stroke-width="1" />
+            <!-- Analog Sticks -->
+            <circle cx="57" cy="66" r="10.5" fill="#071021" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.4" />
+            <circle cx="107" cy="66" r="10.5" fill="#071021" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.4" />
+            <!-- Face Buttons -->
+            <circle cx="124" cy="43" r="3.4" fill="#38bdf8" />
+            <circle cx="132" cy="51" r="3.4" fill="#f472b6" />
+            <circle cx="124" cy="59" r="3.4" fill="#60a5fa" />
+            <circle cx="116" cy="51" r="3.4" fill="#f87171" />
+          </g>
+        </svg>
+      `.trim();
+
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svgMarkup)}`;
+    }
+
+    const FALLBACK_SVG_URI = buildFallbackSvgDataUri();
+
+    // =========================================================================
+    // 3. BACKGROUND MANAGEMENT (localStorage -> background.jpg -> SVG Fallback)
+    // =========================================================================
+    function applyStageImage(imageUrl, statusNote) {
+      ps4Stage.style.backgroundImage = `linear-gradient(to bottom, rgba(4, 11, 24, 0.22), rgba(4, 11, 24, 0.46)), url("${imageUrl}")`;
+      if (statusNote) {
+        subStatus.textContent = statusNote;
+      }
+    }
+
+    function loadDefaultOrLocalBackground() {
+      // Set fallback SVG immediately so there is zero blank flash
+      applyStageImage(
+        FALLBACK_SVG_URI,
+        "PS4 Host UI Ready • Press 'H' or double-click header for display options"
+      );
+
+      // Probe for local 'background.jpg' in the same directory
+      try {
+        const probeImg = new Image();
+        probeImg.onload = () => {
+          applyStageImage(
+            'background.jpg',
+            "Loaded local background.jpg • Press 'H' or double-click header for options"
+          );
+        };
+        probeImg.src = 'background.jpg';
+      } catch (err) {
+        // Keep fallback SVG artwork if local image is unavailable
+      }
+    }
+
+    function restoreSavedBackground() {
+      try {
+        const savedDataUrl = localStorage.getItem(STORAGE_BG_KEY);
+        if (savedDataUrl) {
+          applyStageImage(
+            savedDataUrl,
+            "Restored saved custom background • Press 'H' or double-click header for options"
+          );
+          return true;
+        }
+      } catch (err) {
+        // Ignore storage access errors in sandboxed iframes
+      }
+      return false;
+    }
+
+    function resetBackground() {
+      try {
+        localStorage.removeItem(STORAGE_BG_KEY);
+      } catch (err) {
+        // Ignore storage access errors
+      }
+      loadDefaultOrLocalBackground();
+    }
+
+    // =========================================================================
+    // 4. STATUS DOT ANIMATION & LOCAL HOST INTEGRATION HOOKS (UI MOCKUP ONLY)
+    // =========================================================================
+    function startStatusAnimation() {
+      try {
+        if (statusTimer !== null) {
+          clearInterval(statusTimer);
+          statusTimer = null;
+        }
+        dotsCount = 3;
+        loadingText.textContent = `${STATUS_PREFIX}... ${STATUS_SUFFIX}`;
+
+        statusTimer = setInterval(() => {
+          dotsCount = (dotsCount % 3) + 1;
+          loadingText.textContent = `${STATUS_PREFIX}${'.'.repeat(dotsCount)} ${STATUS_SUFFIX}`;
+        }, 500);
+      } catch (err) {
+        subStatus.textContent = 'Status indicator paused.';
+      }
+    }
+
+    /**
+     * Local Host Integration Hook (Placeholder Only — No Exploit Code Included)
+     * When hosting locally on your own server, you can connect your own legitimate
+     * local scripts or payload loader modules inside this lifecycle hook.
+     */
+    const HostIntegrationHooks = {
+      onHostReady() {
+        // Example hook: update status text when your local script module initializes
+        // loadingText.textContent = 'GoldHEN v2.4b18.14 Ready';
+      },
+      onStatusUpdate(message, detail) {
+        if (message) loadingText.textContent = message;
+        if (detail) subStatus.textContent = detail;
+      }
+    };
+
+    // =========================================================================
+    // 5. EVENT LISTENERS (HIDDEN UTILITY BAR, FILE UPLOAD, FULLSCREEN)
+    // =========================================================================
+    function toggleUtilityControls() {
+      if (topControls) {
+        topControls.classList.toggle('is-visible');
+      }
+    }
+
+    if (topBar) {
+      topBar.addEventListener('dblclick', (event) => {
+        if (event.target.closest('button')) return;
+        toggleUtilityControls();
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (
+        event.key &&
+        event.key.toLowerCase() === 'h' &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey
+      ) {
+        const activeTag = document.activeElement && document.activeElement.tagName;
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+        toggleUtilityControls();
+      }
+    });
+
+    if (uploadBgBtn && bgFileInput) {
+      uploadBgBtn.addEventListener('click', () => bgFileInput.click());
+
+      bgFileInput.addEventListener('change', (event) => {
+        try {
+          const file = event.target.files && event.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result;
+            applyStageImage(dataUrl, `Loaded & saved background: ${file.name}`);
+            try {
+              localStorage.setItem(STORAGE_BG_KEY, dataUrl);
+            } catch (storageErr) {
+              subStatus.textContent = `Loaded background: ${file.name} (file too large for localStorage)`;
+            }
+          };
+          reader.onerror = () => {
+            subStatus.textContent = 'Failed to read the selected image file.';
+          };
+          reader.readAsDataURL(file);
+        } catch (err) {
+          subStatus.textContent = 'Unable to apply selected background image.';
+        } finally {
+          bgFileInput.value = '';
+        }
+      });
+    }
+
+    if (resetBgBtn) {
+      resetBgBtn.addEventListener('click', resetBackground);
+    }
+
+    if (replayBtn) {
+      replayBtn.addEventListener('click', () => {
+        startStatusAnimation();
+        subStatus.textContent = 'Status sequence replayed';
+      });
+    }
+
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener('click', async () => {
+        try {
+          if (!document.fullscreenElement) {
+            await ps4Stage.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (err) {
+          subStatus.textContent = 'Fullscreen mode is restricted in this preview frame.';
+        }
+      });
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (fullscreenBtn) {
+        fullscreenBtn.textContent = document.fullscreenElement ? 'Exit Full Screen' : 'Full Screen';
+      }
+    });
+
+    // =========================================================================
+    // 6. INITIALIZATION
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!restoreSavedBackground()) {
+        loadDefaultOrLocalBackground();
+      }
+      startStatusAnimation();
+      HostIntegrationHooks.onHostReady();
+    });
+  </script>
+</body>
+</html>
